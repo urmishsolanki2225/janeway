@@ -10,6 +10,7 @@ import os
 from dateutil import parser as dateparser
 from itertools import chain
 from bleach import clean
+from iso639 import Lang
 
 from django.urls import reverse
 from django.db import (
@@ -2022,6 +2023,15 @@ class Article(AbstractLastModifiedModel):
         ).strip()
 
         return mark_safe(f"<p>{cleaned}</p>")
+
+    @property
+    def iso639_1_lang_code(self):
+        """Return the ISO 639-1 two-letter code for use in xml:lang."""
+        if not self.language:
+            return "en"  # or None if you prefer to omit
+
+        lang = Lang(self.language)
+        return lang.pt1 or "en"
 
 
 class FrozenAuthorQueryset(model_utils.AffiliationCompatibleQueryset):
